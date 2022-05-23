@@ -1,16 +1,82 @@
 [build-system]
-requires = ["flit_core >=2,<4"]
-build-backend = "flit_core.buildapi"
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.1.0a7"]
 
-[tool.flit.metadata]
-module = "pytest_celery"
-dist-name = "pytest-celery"
-author = "Thomas Grainger"
-author-email = "pytest-celery@graingert.co.uk"
-home-page = "https://github.com/graingert/pytest-celery"
-license = "BSD"
+[tool.black]
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | \.idea
+  | \.github
+)/
+'''
+include = '\.pyi?$'
+line-length = 120
+
+[tool.isort]
+line_length = 120
+profile = "black"
+
+[tool.poetry]
+authors = [
+    "Thomas Grainger <pytest-celery@graingert.co.uk>",
+    "Omer Katz <omer.katz@omerkatz.com>",
+    "Naomi Elstien <naomi.els@omerkatz.com>"
+]
 classifiers = ["License :: OSI Approved :: BSD License"]
-requires = ["celery >= 4.4.0"]
+description = "Pytest plugin for Celery"
+homepage = "https://github.com/celery/pytest-celery"
+license = "BSD"
+name = "pytest-celery"
+version = "1.0.0a1"
 
-[tool.flit.entrypoints.pytest11]
-celery = "celery.contrib.pytest"
+[tool.poetry.dependencies]
+celery = ">= 5.2.0"
+pytest = ">= 6.2.5"
+python = ">= 3.7,<4.0"
+testcontainers = { version = ">= 3.4.2", extras = ["redis"] }
+rfc3986 = "^2.0.0"
+cached-property = { version = "^1.5.2", python = "<3.8" }
+
+[tool.poetry.group.dev]
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+toml-sort = "^0.19.0"
+isort = "^5.10.1"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+Sphinx = "^4.3.1"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = ">= 6.2.5"
+pytest-cov = "^3.0.0"
+pytest-xdist = ">= 2.4.0"
+mocket = { version = "^3.10.4", extras = ["speedups"] }
+Faker = "^11.3.0"
+pyfakefs = "^4.5.4"
+pytest-virtualenv = "^1.7.0"
+pytest-subtests = "^0.7.0"
+
+[tool.poetry.plugins.pytest11]
+celery = "pytest_celery.plugin"
+
+[tool.pytest.ini_options]
+addopts = "-p no:celery --runpytest subprocess"
+minversion = "6.0"
+pytester_example_dir = "examples"
+xfail_strict = true
